@@ -3,6 +3,7 @@ import { User } from "../interface/user.interface";
 import { BehaviorSubject } from 'rxjs';
 import { MatDialog } from "@angular/material/dialog";
 import { UserFormComponent } from "../user-form/user-form.component";
+import {FormBuilder, Validators} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root' // Hago que este servicio esté disponible en toda la aplicación
@@ -15,7 +16,7 @@ export class UserService {
   // Observable para que otros componentes se suscriban
   users$ = this.usersSubject.asObservable();
 
-  constructor(private matDialog: MatDialog) {} // Inyecto MatDialog en el constructor
+  constructor(private matDialog: MatDialog, private fb: FormBuilder) {} // Inyecto MatDialog en el constructor
 
   // Agregar o actualizar dependiendo
   addUser(user: User): void {
@@ -36,6 +37,14 @@ export class UserService {
   openDialog(user?: User) {
     const dialogRef = this.matDialog.open(UserFormComponent, {
       data: user // Paso los datos del usuario al diálogo si existen
+    });
+  }
+
+  initForm(data?:User){
+    return this.fb.group({
+      name: [data?.name, [Validators.required, Validators.pattern('^[a-zA-Z ]*$')]],
+      email: [data?.email, [Validators.required, Validators.email]],
+      age: [data?.age, [Validators.required, Validators.pattern('^[0-9]*$')]]
     });
   }
 
